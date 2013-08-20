@@ -14,8 +14,8 @@ class ArticlesController < ContentController
 
   def index
     respond_to do |format|
-      format.html { @limit = this_blog.limit_article_display }
       format.rss { @limit = this_blog.limit_rss_display }
+      format.html { @limit = this_blog.limit_article_display }
       format.atom { @limit = this_blog.limit_rss_display }
     end
 

@@ -140,6 +140,9 @@ class Admin::ContentController < Admin::BaseController
   def real_action_for(action); { 'add' => :<<, 'remove' => :delete}[action]; end
 
   def new_or_edit
+    
+    logger.debug "**************************************KKKKKKKKKKKKKKKKKKKKK"
+    
     id = params[:id]
     id = params[:article][:id] if params[:article] && params[:article][:id]
     @article = Article.get_or_build_article(id)
@@ -155,7 +158,7 @@ class Admin::ContentController < Admin::BaseController
         end
       end
     end
-
+    
     @article.keywords = Tag.collection_to_string @article.tags
     @article.attributes = params[:article]
     # TODO: Consider refactoring, because double rescue looks... weird.
@@ -165,7 +168,7 @@ class Admin::ContentController < Admin::BaseController
     if request.post?
       set_article_author
       save_attachments
-      
+      merge_articles
       @article.state = "draft" if @article.draft
 
       if @article.save
@@ -217,6 +220,15 @@ class Admin::ContentController < Admin::BaseController
       a = attachment_save(v)
       @article.resources << a unless a.nil?
     end
+  end
+  
+  def merge_articles
+    logger.debug "merge_with value #{params[:merge_with]}"
+    return if params[:merge_with].nil?
+    if params[:merge_with] == ""
+          return 
+    end
+    @article.merge_with(params[:merge_with])
   end
 
   def set_article_categories

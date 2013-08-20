@@ -137,6 +137,19 @@ class Article < Content
   def title_url
     URI.encode(permalink.to_s)
   end
+  
+  def merge_with(other_article_id)
+    article = Article.find(other_article_id)
+    self.body = article.body + self.body
+    self.comments = article.comments + self.comments  
+    logger.debug "before tags #{self.tags}"
+    logger.debug "merging tags #{article.tags}"    
+    self.tags = article.tags + self.tags  
+    self.keywords = Tag.collection_to_string self.tags    
+#    article.keywords = Tag.collection_to_string article.tags
+ #   self.keywords = article.keywords + self.keywords      
+    logger.debug "after tags #{self.tags}"
+  end
 
   def permalink_url_options(nesting = false)
     format_url = blog.permalink_format.dup
